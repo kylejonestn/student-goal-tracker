@@ -35,7 +35,180 @@
     </div>
 
     <main id="app-container" style="display: none;">
-        <p>Loading app...</p>
+        <div class="container">
+          <h1>Student Goal Tracker</h1>
+          
+          <div class="section">
+            <div class="section-header">
+              <label for="studentSearch">Select Student:</label>
+              <div class="sort-controls">
+                <button id="sort-by-update-btn" class="icon-button active" title="Sort by Most Recent">
+                  <span class="material-symbols-outlined">history</span>
+                </button>
+                <button id="sort-alpha-btn" class="icon-button" title="Sort Alphabetically">
+                  <span class="material-symbols-outlined">sort_by_alpha</span>
+                </button>
+                <button id="toggle-inactive-btn" class="icon-button" title="Show Inactive Students">
+                  <span class="material-symbols-outlined">visibility_off</span>
+                </button>
+              </div>
+            </div>
+            <div class="input-with-button">
+              <input type="text" id="studentSearch" placeholder="Type to search for student...">
+              <button id="edit-student-btn" class="icon-button" title="Edit Student" style="display: none;"><span class="material-symbols-outlined">edit</span></button> 
+            </div>
+            <div id="student-search-results"></div>
+            <div id="selected-student-display" class="selected-student" style="display: none;"></div>
+          </div>
+    
+          <div class="section" id="goals-section" style="display: none;">
+            <div class="section-header">
+              <h2>Goals for <span id="current-student-name"></span>:</h2>
+            </div>
+            <div id="student-goals-list" class="goal-button-container"></div>
+            <div id="selected-goal-display" class="selected-goal-display" style="display: none;"></div>
+          </div>
+    
+          <div class="section" id="observation-section" style="display: none;">
+            <div class="section-header">
+              <h2>Record Observation:</h2>
+            </div>
+            <textarea id="observationNote" rows="4" placeholder="Enter observation note..."></textarea>
+            <div id="tag-selection-container">
+              <label>Behavioral Tags:</label>
+              <div id="tag-chips-area" class="tag-chips-area"></div>
+            </div>
+            <button id="submitObservationBtn">Submit Observation</button>
+          </div>
+    
+          <div class="report-section" id="report-section" style="display: none;">
+            <div class="section-header">
+              <h2>Student Report:</h2>
+              <div class="report-actions">
+                <div class="toggle-switch-container" title="Show/Hide entries excluded from PDF reports">
+                  <label for="show-hidden-toggle">Show Hidden</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="show-hidden-toggle">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <button id="downloadPdfIcon" class="icon-button" title="Download as PDF" style="display: none;"><span class="material-symbols-outlined">download</span></button>
+                <button id="copyReportIcon" class="icon-button" title="Copy Report" style="display: none;"><span class="material-symbols-outlined">content_copy</span></button>
+              </div>
+            </div>
+            <div id="student-report-content"></div>
+            <div id="report-tag-summary" style="display: none;">
+              <h3>Tag Summary</h3>
+              <div id="report-tag-summary-content" class="tag-chips-area"></div>
+              <button id="reset-filter-btn" class="text-button" style="display: none;">Reset Filter</button>
+            </div>
+          </div>
+    
+          <div id="app-status"></div>
+        </div>
+    
+        <div id="successModal" class="modal-overlay">
+          <div class="success-modal-content modal-content">
+            <span class="modal-close-button" id="closeModalBtn">&times;</span>
+            <div class="checkmark-icon">✔️</div>
+            <div class="modal-message">Observation saved successfully!</div>
+            <div class="modal-buttons">
+              <button id="addAnotherObservationBtn">Make Another Observation</button>
+            </div>
+          </div>
+        </div>
+    
+        <div id="goalModal" class="modal-overlay">
+          <div class="goal-modal-content modal-content">
+            <span class="modal-close-button" id="closeGoalModalBtn">&times;</span>
+            <h3 id="goalModalTitle">Add New Goal</h3>
+            <form id="goalForm">
+              <input type="hidden" id="goalId" name="goalId">
+              <input type="hidden" id="goalStudentId" name="goalStudentId">
+              <div>
+                <label for="goalTitle">Goal Title:</label>
+                <input type="text" id="goalTitle" name="goalTitle" required>
+              </div>
+              <div>
+                <label for="goalDescription">Goal Description:</label>
+                <textarea id="goalDescription" name="goalDescription" rows="3" required></textarea>
+              </div>
+              <div class="form-group">
+                <label>Goal Category:</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="goalCategory" value="IEP Goal" checked> IEP Goal</label>
+                  <label><input type="radio" name="goalCategory" value="Personal Goal"> Personal Goal</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="goalActive">Status:</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="goalActive" name="goalActive" checked>
+                  <label for="goalActive">Active</label>
+                </div>
+              </div>
+              <div class="modal-form-actions">
+                <button type="button" class="cancel-btn" id="cancelGoalModalBtn">Cancel</button>
+                <button type="submit" class="save-btn" id="saveGoalBtn">Save Goal</button>
+              </div>
+            </form>
+          </div>
+        </div>
+    
+        <div id="studentModal" class="modal-overlay">
+          <div class="student-modal-content modal-content">
+            <span class="modal-close-button" id="closeStudentModalBtn">&times;</span>
+            <h3 id="studentModalTitle">Edit Student</h3>
+            <form id="studentForm">
+              <input type="hidden" id="studentId" name="studentId">
+              <div>
+                <label for="studentFirstName">First Name:</label>
+                <input type="text" id="studentFirstName" name="studentFirstName" required>
+              </div>
+              <div>
+                <label for="studentLastName">Last Name:</label>
+                <input type="text" id="studentLastName" name="studentLastName" required>
+              </div>
+              <div>
+                <label for="studentGradeLevel">Grade Level:</label>
+                <input type="text" id="studentGradeLevel" name="studentGradeLevel" required>
+              </div>
+              <div class="form-group">
+                <label for="studentActive">Status:</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="studentActive" name="studentActive" checked>
+                  <label for="studentActive">Active</label>
+                </div>
+              </div>
+              <div class="modal-form-actions">
+                <button type="button" class="cancel-btn" id="cancelStudentModalBtn">Cancel</button>
+                <button type="submit" class="save-btn" id="saveStudentBtn">Save Student</button>
+              </div>
+            </form>
+          </div>
+        </div>
+    
+        <div id="tagModal" class="modal-overlay">
+          <div class="tag-modal-content modal-content">
+            <span class="modal-close-button" id="closeTagModalBtn">&times;</span>
+            <h3 id="tagModalTitle">Add New Behavioral Tag</h3>
+            <form id="tagForm">
+                <div>
+                    <label for="tagName">Tag Name:</label>
+                    <input type="text" id="tagName" name="tagName" required>
+                </div>
+                <div>
+                    <label for="tagDescription">Tag Description (Optional):</label>
+                    <textarea id="tagDescription" name="tagDescription" rows="3"></textarea>
+                    <p class="form-helper-text">This description can be helpful for explaining behaviors to parents. Do not include student names, as tags can be used for multiple students.</p>
+                </div>
+                <div class="modal-form-actions">
+                    <button type="button" class="cancel-btn" id="cancelTagModalBtn">Cancel</button>
+                    <button type="submit" class="save-btn" id="saveTagBtn">Save Tag</button>
+                </div>
+            </form>
+          </div>
+        </div>
     </main>
     
     <script src="script.js" defer></script>
