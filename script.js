@@ -234,43 +234,6 @@ async function submitObservation() {
 
 
 /* ======================================================================= *
- * UI & STATE CONTROLS
- * ======================================================================= */
-function closeAllModals() {
-  document.querySelectorAll('.modal-overlay').forEach(modal => modal.style.display = 'none');
-}
-
-async function setSortOrder(newOrder) {
-  if (currentSortOrder === newOrder) return;
-  currentSortOrder = newOrder;
-  document.getElementById('sort-by-update-btn').classList.toggle('active', newOrder === 'lastUpdated');
-  document.getElementById('sort-alpha-btn').classList.toggle('active', newOrder === 'alphabetical');
-  await loadStudents();
-}
-
-function toggleInactiveStudents() {
-  showInactiveStudents = !showInactiveStudents;
-  const btn = document.getElementById('toggle-inactive-btn');
-  const icon = btn.querySelector('.material-symbols-outlined');
-  if (showInactiveStudents) {
-    icon.textContent = 'visibility';
-    btn.title = 'Hide Inactive Students';
-  } else {
-    icon.textContent = 'visibility_off';
-    btn.title = 'Show Inactive Students';
-  }
-  filterStudents(document.getElementById('studentSearch').value);
-}
-
-function handleShowHiddenToggle(event) {
-  const reportSection = document.getElementById('report-section');
-  if (reportSection) {
-    reportSection.classList.toggle('is-showing-hidden', event.target.checked);
-  }
-}
-
-
-/* ======================================================================= *
  * STUDENT SELECTION MODULE
  * ======================================================================= */
 async function loadStudents() {
@@ -966,4 +929,3 @@ function handleError(error) {
   console.error("An error occurred:", error);
   document.getElementById('app-status').textContent = `Error: ${error.message}`;
 }
-</script>
