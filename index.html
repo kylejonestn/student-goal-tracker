@@ -36,7 +36,13 @@
 
     <main id="app-container" style="display: none;">
         <div class="container">
-          <h1>Student Goal Tracker</h1>
+            <div id="onboarding-view" class="section" style="display: none; text-align: center;">
+              <h2>Welcome to the Student Goal Tracker!</h2>
+              <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto 24px auto;">To get started, the app needs to create a new Google Sheet in your personal Google Drive to securely store your student data.</p>
+              <button id="setup-spreadsheet-btn" class="save-btn">Create My Spreadsheet</button>
+            </div>
+
+            <h1>Student Goal Tracker</h1>
           
           <div class="section">
             <div class="section-header">
