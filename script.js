@@ -157,12 +157,30 @@ function showMainAppUI() {
   document.getElementById('report-section').style.display = 'none';
 }
 
-// This is the placeholder for our next step
-function triggerSetup() {
-  document.getElementById('setup-spreadsheet-btn').disabled = true;
-  document.getElementById('setup-spreadsheet-btn').textContent = 'Setting Up...';
-  alert("Next, we'll build the server-side function to create the spreadsheet!");
-  // We will replace this alert with an apiRequest call in the next step.
+async function triggerSetup() {
+  const setupBtn = document.getElementById('setup-spreadsheet-btn');
+  setupBtn.disabled = true;
+  setupBtn.textContent = 'Creating Spreadsheet...';
+  document.getElementById('app-status').textContent = 'Please wait, this may take a moment...';
+
+  try {
+    const result = await apiRequest('setupNewUser', {}, false); // Call the backend
+    
+    if (result && result.spreadsheetId) {
+      spreadsheetId = result.spreadsheetId; // Store the new ID from the server
+      document.getElementById('app-status').textContent = 'Setup complete! Loading app...';
+      
+      // Transition to the main app view
+      showMainAppUI();
+      // Load the initial (empty) data from the newly created sheet
+      await loadInitialData(); 
+    }
+  } catch (error) {
+    // apiRequest's handleError will have already shown the message,
+    // so we just need to re-enable the button for another try.
+    setupBtn.disabled = false;
+    setupBtn.textContent = 'Create My Spreadsheet';
+  }
 }
 
 /* ======================================================================= *
