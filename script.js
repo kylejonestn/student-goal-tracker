@@ -23,8 +23,12 @@ let currentReportObservations = [];
  * INITIALIZATION
  * ======================================================================= */
 document.addEventListener('DOMContentLoaded', function() {
+  // Event listeners are set up, but the app waits for Google Sign-In to start.
+  
+  // New listener for the setup button
+  document.getElementById('setup-spreadsheet-btn').addEventListener('click', triggerSetup);
+
   // Main Listeners
-    document.getElementById('setup-spreadsheet-btn').addEventListener('click', triggerSetup);
   document.getElementById('studentSearch').addEventListener('input', () => filterStudents(document.getElementById('studentSearch').value));
   document.getElementById('edit-student-btn').addEventListener('click', editStudent);
   document.getElementById('submitObservationBtn').addEventListener('click', submitObservation);
@@ -97,12 +101,9 @@ async function apiRequest(action, payload = {}, showLoading = true) {
 /* ======================================================================= *
  * AUTHENTICATION & ONBOARDING
  * ======================================================================= */
-
-// This function is called by Google after a successful sign-in
 function handleCredentialResponse(response) {
   id_token = response.credential;
   
-  // First, verify the user's identity with our backend
   fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -112,10 +113,8 @@ function handleCredentialResponse(response) {
   .then(result => {
     if (result.status === 'SUCCESS') {
       userProfile = result.data;
-      // Show the main app container
       document.getElementById('sign-in-view').style.display = 'none';
       document.getElementById('app-container').style.display = 'block';
-      // Now, check if this verified user has set up their spreadsheet
       checkUserSetup();
     } else {
       handleError(new Error(result.message));
@@ -124,34 +123,25 @@ function handleCredentialResponse(response) {
   .catch(handleError);
 }
 
-// This new function asks our server if the user is new or returning
 async function checkUserSetup() {
-  const setupStatus = await apiRequest('checkUserSetup', {}, false); // false = don't show "Loading..."
+  const setupStatus = await apiRequest('checkUserSetup', {}, false);
   if (setupStatus.isSetup) {
-    // If they are a returning user, store their spreadsheetId...
     spreadsheetId = setupStatus.spreadsheetId;
-    // ...show the main app UI...
     showMainAppUI();
-    // ...and load their data.
     await loadInitialData();
   } else {
-    // If they are a new user, show the onboarding screen.
     showOnboardingUI();
   }
 }
 
-// This new function shows only the "Welcome" screen
 function showOnboardingUI() {
-  document.querySelectorAll('.section, .report-section, h1').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('#student-section, #goals-section, #observation-section, #report-section, #app-container h1').forEach(el => el.style.display = 'none');
   document.getElementById('onboarding-view').style.display = 'block';
 }
 
-// This new function shows the main application interface
 function showMainAppUI() {
-  document.querySelectorAll('.section, .report-section, h1').forEach(el => el.style.display = 'block');
+  document.querySelectorAll('#student-section, #app-container h1').forEach(el => el.style.display = 'block');
   document.getElementById('onboarding-view').style.display = 'none';
-  
-  // Hide sections that require a student selection
   document.getElementById('goals-section').style.display = 'none';
   document.getElementById('observation-section').style.display = 'none';
   document.getElementById('report-section').style.display = 'none';
@@ -164,27 +154,22 @@ async function triggerSetup() {
   document.getElementById('app-status').textContent = 'Please wait, this may take a moment...';
 
   try {
-    const result = await apiRequest('setupNewUser', {}, false); // Call the backend
-    
+    const result = await apiRequest('setupNewUser', {}, false);
     if (result && result.spreadsheetId) {
-      spreadsheetId = result.spreadsheetId; // Store the new ID from the server
+      spreadsheetId = result.spreadsheetId;
       document.getElementById('app-status').textContent = 'Setup complete! Loading app...';
-      
-      // Transition to the main app view
       showMainAppUI();
-      // Load the initial (empty) data from the newly created sheet
-      await loadInitialData(); 
+      await loadInitialData();
     }
   } catch (error) {
-    // apiRequest's handleError will have already shown the message,
-    // so we just need to re-enable the button for another try.
     setupBtn.disabled = false;
     setupBtn.textContent = 'Create My Spreadsheet';
   }
 }
 
+
 /* ======================================================================= *
- * CORE APP LOGIC (This function might have been named initializeApp before)
+ * CORE APP LOGIC
  * ======================================================================= */
 async function loadInitialData() {
   const data = await apiRequest('getInitialData', { sortBy: currentSortOrder });
