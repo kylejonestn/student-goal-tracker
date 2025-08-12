@@ -5,6 +5,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxbu8EHFE8l9x8ZFK4efuWH
 
 let userProfile = null;
 let id_token = null;
+let spreadsheetId = null;
 let allStudents = []; 
 let selectedStudent = null; 
 let currentSortOrder = 'lastUpdated';
@@ -23,6 +24,7 @@ let currentReportObservations = [];
  * ======================================================================= */
 document.addEventListener('DOMContentLoaded', function() {
   // Main Listeners
+    document.getElementById('setup-spreadsheet-btn').addEventListener('click', triggerSetup);
   document.getElementById('studentSearch').addEventListener('input', () => filterStudents(document.getElementById('studentSearch').value));
   document.getElementById('edit-student-btn').addEventListener('click', editStudent);
   document.getElementById('submitObservationBtn').addEventListener('click', submitObservation);
@@ -93,11 +95,14 @@ async function apiRequest(action, payload = {}, showLoading = true) {
 
 
 /* ======================================================================= *
- * AUTHENTICATION
+ * AUTHENTICATION & ONBOARDING
  * ======================================================================= */
+
+// This function is called by Google after a successful sign-in
 function handleCredentialResponse(response) {
   id_token = response.credential;
   
+  // First, verify the user's identity with our backend
   fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -107,9 +112,11 @@ function handleCredentialResponse(response) {
   .then(result => {
     if (result.status === 'SUCCESS') {
       userProfile = result.data;
+      // Show the main app container
       document.getElementById('sign-in-view').style.display = 'none';
       document.getElementById('app-container').style.display = 'block';
-      initializeApp();
+      // Now, check if this verified user has set up their spreadsheet
+      checkUserSetup();
     } else {
       handleError(new Error(result.message));
     }
@@ -117,11 +124,51 @@ function handleCredentialResponse(response) {
   .catch(handleError);
 }
 
+// This new function asks our server if the user is new or returning
+async function checkUserSetup() {
+  const setupStatus = await apiRequest('checkUserSetup', {}, false); // false = don't show "Loading..."
+  if (setupStatus.isSetup) {
+    // If they are a returning user, store their spreadsheetId...
+    spreadsheetId = setupStatus.spreadsheetId;
+    // ...show the main app UI...
+    showMainAppUI();
+    // ...and load their data.
+    await loadInitialData();
+  } else {
+    // If they are a new user, show the onboarding screen.
+    showOnboardingUI();
+  }
+}
+
+// This new function shows only the "Welcome" screen
+function showOnboardingUI() {
+  document.querySelectorAll('.section, .report-section, h1').forEach(el => el.style.display = 'none');
+  document.getElementById('onboarding-view').style.display = 'block';
+}
+
+// This new function shows the main application interface
+function showMainAppUI() {
+  document.querySelectorAll('.section, .report-section, h1').forEach(el => el.style.display = 'block');
+  document.getElementById('onboarding-view').style.display = 'none';
+  
+  // Hide sections that require a student selection
+  document.getElementById('goals-section').style.display = 'none';
+  document.getElementById('observation-section').style.display = 'none';
+  document.getElementById('report-section').style.display = 'none';
+}
+
+// This is the placeholder for our next step
+function triggerSetup() {
+  document.getElementById('setup-spreadsheet-btn').disabled = true;
+  document.getElementById('setup-spreadsheet-btn').textContent = 'Setting Up...';
+  alert("Next, we'll build the server-side function to create the spreadsheet!");
+  // We will replace this alert with an apiRequest call in the next step.
+}
 
 /* ======================================================================= *
- * CORE APP LOGIC
+ * CORE APP LOGIC (This function might have been named initializeApp before)
  * ======================================================================= */
-async function initializeApp() {
+async function loadInitialData() {
   const data = await apiRequest('getInitialData', { sortBy: currentSortOrder });
   if (data) {
     allStudents = data.students;
