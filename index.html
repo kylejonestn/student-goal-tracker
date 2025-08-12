@@ -17,12 +17,13 @@
 </head>
 <body>
 
-    <div id="sign-in-view">
-        <h1>Student Goal Tracker</h1>
+    <div id="sign-in-view" style="text-align: center; padding-top: 40px;">
+        <h1 style="color: #005DB3; font-family: 'Average', serif;">Student Goal Tracker</h1>
+        <p style="font-family: 'Lato', sans-serif;">Please sign in to continue.</p>
         <div id="g_id_onload"
              data-client_id="335634136444-v0os3kcffpbml2kcluah7uii756de2hu.apps.googleusercontent.com"
              data-callback="handleCredentialResponse"
-             data-auto_prompt="true">
+             data-auto_prompt="false">
         </div>
         <div class="g_id_signin"
              data-type="standard"
@@ -35,16 +36,15 @@
     </div>
 
     <main id="app-container" style="display: none;">
+        <div id="onboarding-view" class="section" style="display: none; text-align: center; margin-top: 24px;">
+            <h2>Welcome to the Student Goal Tracker!</h2>
+            <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto 24px auto;">To get started, the app needs to create a new Google Sheet in your personal Google Drive to securely store your student data.</p>
+            <button id="setup-spreadsheet-btn" class="save-btn">Create My Spreadsheet</button>
+        </div>
         <div class="container">
-            <div id="onboarding-view" class="section" style="display: none; text-align: center;">
-              <h2>Welcome to the Student Goal Tracker!</h2>
-              <p style="font-size: 1.1rem; max-width: 500px; margin: 0 auto 24px auto;">To get started, the app needs to create a new Google Sheet in your personal Google Drive to securely store your student data.</p>
-              <button id="setup-spreadsheet-btn" class="save-btn">Create My Spreadsheet</button>
-            </div>
-
-            <h1>Student Goal Tracker</h1>
+          <h1>Student Goal Tracker</h1>
           
-          <div class="section">
+          <div class="section" id="student-section">
             <div class="section-header">
               <label for="studentSearch">Select Student:</label>
               <div class="sort-controls">
@@ -114,107 +114,13 @@
         </div>
     
         <div id="successModal" class="modal-overlay">
-          <div class="success-modal-content modal-content">
-            <span class="modal-close-button" id="closeModalBtn">&times;</span>
-            <div class="checkmark-icon">✔️</div>
-            <div class="modal-message">Observation saved successfully!</div>
-            <div class="modal-buttons">
-              <button id="addAnotherObservationBtn">Make Another Observation</button>
-            </div>
           </div>
-        </div>
-    
         <div id="goalModal" class="modal-overlay">
-          <div class="goal-modal-content modal-content">
-            <span class="modal-close-button" id="closeGoalModalBtn">&times;</span>
-            <h3 id="goalModalTitle">Add New Goal</h3>
-            <form id="goalForm">
-              <input type="hidden" id="goalId" name="goalId">
-              <input type="hidden" id="goalStudentId" name="goalStudentId">
-              <div>
-                <label for="goalTitle">Goal Title:</label>
-                <input type="text" id="goalTitle" name="goalTitle" required>
-              </div>
-              <div>
-                <label for="goalDescription">Goal Description:</label>
-                <textarea id="goalDescription" name="goalDescription" rows="3" required></textarea>
-              </div>
-              <div class="form-group">
-                <label>Goal Category:</label>
-                <div class="radio-group">
-                  <label><input type="radio" name="goalCategory" value="IEP Goal" checked> IEP Goal</label>
-                  <label><input type="radio" name="goalCategory" value="Personal Goal"> Personal Goal</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="goalActive">Status:</label>
-                <div class="checkbox-group">
-                  <input type="checkbox" id="goalActive" name="goalActive" checked>
-                  <label for="goalActive">Active</label>
-                </div>
-              </div>
-              <div class="modal-form-actions">
-                <button type="button" class="cancel-btn" id="cancelGoalModalBtn">Cancel</button>
-                <button type="submit" class="save-btn" id="saveGoalBtn">Save Goal</button>
-              </div>
-            </form>
           </div>
-        </div>
-    
         <div id="studentModal" class="modal-overlay">
-          <div class="student-modal-content modal-content">
-            <span class="modal-close-button" id="closeStudentModalBtn">&times;</span>
-            <h3 id="studentModalTitle">Edit Student</h3>
-            <form id="studentForm">
-              <input type="hidden" id="studentId" name="studentId">
-              <div>
-                <label for="studentFirstName">First Name:</label>
-                <input type="text" id="studentFirstName" name="studentFirstName" required>
-              </div>
-              <div>
-                <label for="studentLastName">Last Name:</label>
-                <input type="text" id="studentLastName" name="studentLastName" required>
-              </div>
-              <div>
-                <label for="studentGradeLevel">Grade Level:</label>
-                <input type="text" id="studentGradeLevel" name="studentGradeLevel" required>
-              </div>
-              <div class="form-group">
-                <label for="studentActive">Status:</label>
-                <div class="checkbox-group">
-                  <input type="checkbox" id="studentActive" name="studentActive" checked>
-                  <label for="studentActive">Active</label>
-                </div>
-              </div>
-              <div class="modal-form-actions">
-                <button type="button" class="cancel-btn" id="cancelStudentModalBtn">Cancel</button>
-                <button type="submit" class="save-btn" id="saveStudentBtn">Save Student</button>
-              </div>
-            </form>
           </div>
-        </div>
-    
         <div id="tagModal" class="modal-overlay">
-          <div class="tag-modal-content modal-content">
-            <span class="modal-close-button" id="closeTagModalBtn">&times;</span>
-            <h3 id="tagModalTitle">Add New Behavioral Tag</h3>
-            <form id="tagForm">
-                <div>
-                    <label for="tagName">Tag Name:</label>
-                    <input type="text" id="tagName" name="tagName" required>
-                </div>
-                <div>
-                    <label for="tagDescription">Tag Description (Optional):</label>
-                    <textarea id="tagDescription" name="tagDescription" rows="3"></textarea>
-                    <p class="form-helper-text">This description can be helpful for explaining behaviors to parents. Do not include student names, as tags can be used for multiple students.</p>
-                </div>
-                <div class="modal-form-actions">
-                    <button type="button" class="cancel-btn" id="cancelTagModalBtn">Cancel</button>
-                    <button type="submit" class="save-btn" id="saveTagBtn">Save Tag</button>
-                </div>
-            </form>
           </div>
-        </div>
     </main>
     
     <script src="script.js" defer></script>
